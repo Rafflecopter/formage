@@ -25,7 +25,6 @@ var btn = {
     }
 };
 
-
 function initFieldSet(ctx) {
     // On first run, close all field-sets, open only those with errors
     if (!ctx) {
@@ -141,7 +140,7 @@ function ListField(el) {
             var input = $(this),
                 name = input.attr('name').replace(self.name + '_tmpl_', self.name + '_li' + self.length + '_');
 
-            input.attr('name', name);
+            input.attr('name', name).data('origvalue', '');
         });
 
         self.length++;
@@ -359,6 +358,16 @@ $(function () {
             $.post(upsertURL, $(this).serialize()).done(function (docInfo) {
                 window.parent.hideDialog({id: docInfo.id, label: docInfo.label});
             });
+        } else {
+            $(this).find('select[data-origvalue],input[data-origvalue]').each(function (i, input) {
+                var $input = $(input);
+                if ($input.data('origvalue') == $input.val()) {
+                    $input.remove();
+                }
+            });
+            if ($(this).find('select[data-origvalue],input[data-origvalue]').length === 0) {
+                $(this).append($('<input>').attr('type','hidden').attr('name','_nothing').val(''));
+            }
         }
     });
     if (isDialog) {
